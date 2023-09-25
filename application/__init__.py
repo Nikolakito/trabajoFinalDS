@@ -26,7 +26,9 @@ def create_app(test_config=None):
 
     # a simple page that says tuki
     @app.route('/tuki')
-    def hello():
+    def tuki():
         return 'tuki!'
+    from . import auth
+    app.register_blueprint(auth.bp) 
 
     return app
