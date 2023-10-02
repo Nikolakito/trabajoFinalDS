@@ -20,7 +20,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
-        
+
 def init_db():
     db = get_db()
 
@@ -32,4 +32,8 @@ def init_db():
 def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
-    click.echo('Initialized the database.')
+    click.echo('Se inició la db.')
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
