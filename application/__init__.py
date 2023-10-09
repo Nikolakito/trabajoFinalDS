@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import (Flask, render_template)
 
 
 def create_app(test_config=None):
@@ -28,6 +28,12 @@ def create_app(test_config=None):
     @app.route('/tuki')
     def tuki():
         return 'tuki!'
+    
+    @app.route('/')
+    def index():
+    
+        return render_template('musiquita/index.html')
+
     from . import auth
     app.register_blueprint(auth.bp) 
     
@@ -40,6 +46,14 @@ def create_app(test_config=None):
     
     from . import musiquita
     app.register_blueprint(musiquita.bp)
+    app.add_url_rule('/', endpoint='index')
+
+    from . import albums
+    app.register_blueprint(albums.bp)
+    app.add_url_rule('/', endpoint='index')
+
+    from . import artist
+    app.register_blueprint(artist.bp)
     app.add_url_rule('/', endpoint='index')
     
     return app

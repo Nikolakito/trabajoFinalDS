@@ -1,20 +1,8 @@
-
 <link rel="stylesheet" href="{{ url_for('static', filename='stail.css') }}" />
 {% block header %}
-  <h1>{% block title %}LISTA CANCIONES{% endblock %}</h1>
+<h1>{% block title %}Pàgina Chinook{% endblock %}</h1>
+{% endblock %} {% block content %}
+<a href="">Tracks</a>
+<a href="">Artistas</a>
+<a href="">Albums</a>
 {% endblock %}
-
-{% block content %}
-  {% for c in cancion %}
-    <article class="post">
-      <header>
-        <div>
-          <h1>{{ c['nombre'] }}</h1>
-          <div class="about">by {{ c['album'] }}</div>
-        </div>
-      </header>
-      <p class="body">{{ c['artista'] }}</p>
-    </article>
-  {% endfor %}
-{% endblock %}
-

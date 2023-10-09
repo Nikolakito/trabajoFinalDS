@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='stail.css') }}" />
+{% block header %}
+  <h1>{% block title %}Artistas "{{ post['title'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% for c in artistas %}
+<a href="{{url_for('artist.det_artist', id=c['id'])}}">{{ c['artista'] }}</a>
+  
+{% endfor %} 
+    
+  
+{% endblock %}
