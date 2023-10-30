@@ -8,7 +8,7 @@ from application.db import get_db
 
 bp = Blueprint('artist', __name__, url_prefix='/artist')
 
-@bp.route('/')
+@bp.route('/index')
 def index():
     db = get_db()
     artistas = db.execute(
@@ -16,7 +16,7 @@ def index():
          FROM artists ar 
          ORDER BY ar.Name DESC """
     ).fetchall()
-    return render_template('musiquita/index.html', artistas=artistas)
+    return render_template('artists/index.html', artistas=artistas)
 
 def get_artist(id):
     post = get_db().execute(

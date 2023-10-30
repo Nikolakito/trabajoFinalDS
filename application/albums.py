@@ -8,11 +8,11 @@ from application.db import get_db
 
 bp = Blueprint('albums', __name__, url_prefix='/albums')
 
-@bp.route('/')
+@bp.route('/index')
 def index():
     db = get_db()
     albums = db.execute(
-        """SELECT t.AlbumId AS id, Title AS album 
+        """SELECT AlbumId AS id, Title AS album 
          FROM albums
          ORDER BY Title DESC """
     ).fetchall()

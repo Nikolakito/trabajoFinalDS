@@ -2,7 +2,7 @@
 {% block header %}
 <h1>{% block title %}Pàgina Chinook{% endblock %}</h1>
 {% endblock %} {% block content %}
-<a href="">Tracks</a>
-<a href="">Artistas</a>
-<a href="">Albums</a>
+<a href="{{ url_for('tracks.index') }}">Tracks</a>
+<a href="{{ url_for('artist.index') }}">Artistas</a>
+<a href="{{ url_for('albums.index') }}">Albums</a>
 {% endblock %}
