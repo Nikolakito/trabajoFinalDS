@@ -2,6 +2,6 @@
 {% block header %}
 <h1>{% block title %}Tracks {% endblock %}</h1>
 {% endblock %} {% block content %} {% for c in cancion %}
-<a href="{{url_for('tracks.det_track', id=c['id'])}}">{{ c['nombre'] }}</a>
+<a href="{{url_for('tracks.get_track', id=c['id'])}}">{{ c['nombre'] }}</a>
 
 {% endfor %} {% endblock %}

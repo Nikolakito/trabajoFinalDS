@@ -10,7 +10,7 @@ bp = Blueprint('tracks', __name__, url_prefix='/tracks')
 
 
 
-@bp.route('/index')
+@bp.route('/')
 def index():
     db = get_db()
     cancion = db.execute(
@@ -19,22 +19,26 @@ def index():
     ).fetchall()
     return render_template('tracks/index.html', cancion=cancion)
 
+@bp.route('/detallito/<int:id>/', methods=('GET', 'POST'))
 def get_track(id):
-    post = get_db().execute(
-        """SELECT t.Name AS nombre, g.Name AS genero, Composer, Milliseconds,
+    trackn = get_db().execute(
+        """SELECT t.Name AS nombre FROM tracks t 
+         WHERE t.TrackId = ?""",
+        (id,)
+    ).fetchall()
+
+    tracki = get_db().execute(
+        """SELECT g.Name AS genero, Composer, Milliseconds,
          Bytes, UnitPrice
          FROM tracks t 
          JOIN genres g ON t.GenreId=g.GenreId
          WHERE t.TrackId = ?""",
         (id,)
-    ).fetchone()
+    ).fetchall()
 
-    if post is None:
+    if tracki is None:
         abort(404, f"Post id {id} doesn't exist.")
 
-    return post
+    
 
-@bp.route('/detallito/<int:id>/', methods=('GET', 'POST'))
-def det_track(id):
-    post = get_track(id)
-    return render_template('tracks/detallito.html', post=post)
+    return render_template('tracks/detallito.html', trackn=trackn, tracki=tracki)

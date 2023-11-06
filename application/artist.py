@@ -8,7 +8,7 @@ from application.db import get_db
 
 bp = Blueprint('artist', __name__, url_prefix='/artist')
 
-@bp.route('/index')
+@bp.route('/')
 def index():
     db = get_db()
     artistas = db.execute(
@@ -18,19 +18,23 @@ def index():
     ).fetchall()
     return render_template('artists/index.html', artistas=artistas)
 
+
+@bp.route('/<int:id>/', methods=('GET', 'POST'))
 def get_artist(id):
-    post = get_db().execute(
-        """SELECT Title AS album, ar.Name AS artista 
-         FROM artists ar JOIN albums a ON a.ArtistId=ar.ArtistId
-         WHERE t.ArtistId = ?""",
+    artist = get_db().execute(
+        """SELECT ar.Name AS artista 
+         FROM artists ar
+         WHERE ar.ArtistId = ?""",
         (id,)
-    ).fetchone()
+    ).fetchall()
 
-    if post is None:
-        abort(404, f"Post id {id} doesn't exist.")
+    if artist is None:
+        abort(404, f"Artist id {id} doesn't exist.")
 
-    return post
-@bp.route('/detallito/<int:id>/', methods=('GET', 'POST'))
-def det_artist(id):
-    post = get_artist(id)
-    return render_template('artists/detallito.html', post=post)
+    albums = get_db().execute(
+        """SELECT a.Title AS disco FROM albums a
+         WHERE a.ArtistId = ?""",
+        (id,)
+    ).fetchall()
+
+    return render_template('artists/detallito.html', artist=artist, albums=albums)

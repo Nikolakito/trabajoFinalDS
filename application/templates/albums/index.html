@@ -2,5 +2,5 @@
 {% block header %}
 <h1>{% block title %}Albums{% endblock %}</h1>
 {% endblock %} {% block content %} {% for c in albums %}
-<a href="{{url_for('albums.det_album', id=c['id'])}}">{{ c['album'] }}</a>
+<a href="{{url_for('albums.get_album', id=c['id'])}}">{{ c['album'] }}</a>
 {% endfor %} {% endblock %}

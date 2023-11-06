@@ -10,7 +10,7 @@ def get_db():
             current_app.config['DATABASE'],
             detect_types=sqlite3.PARSE_DECLTYPES
         )
-        g.db.row_factory = sqlite3.Row
+        g.db.row_factory = dict_factory
 
     return g.db
 
@@ -37,3 +37,7 @@ def init_db_command():
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+
+def dict_factory(cursor, row):
+   fields = [column[0] for column in cursor.description]
+   return {key: value for key, value in zip(fields, row)}

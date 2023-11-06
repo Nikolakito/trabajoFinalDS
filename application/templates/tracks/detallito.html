@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='stail.css') }}" />
+{% block header %}
+<h1>{% block title %}{{ trackn['nombre'] }}{% endblock %}</h1>
+{% endblock %} 
+{% block content %} 
+ 
+{% for t in tracki %}
+<p>{{ t['genero'] }}</p>
+<p>{{ t['Composer'] }}</p>
+<p>{{ t['Milliseconds'] }} Milliseconds</p>
+<p>{{ t['Bytes'] }} Bytes</p>
+<p>{{ t['UnitPrice'] }}</p>
+{% endfor %} {% endblock %}
