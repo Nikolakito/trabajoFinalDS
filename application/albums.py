@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -7,6 +7,7 @@ from werkzeug.exceptions import abort
 from application.db import get_db
 
 bp = Blueprint('albums', __name__, url_prefix='/album')
+bpapi = Blueprint('api_album', __name__, url_prefix="/api/album")
 
 @bp.route('/')
 def index():
@@ -40,3 +41,39 @@ def get_album(id):
         abort(404, f"Album id {id} doesn't exist.")
 
     return render_template('albums/detallito.html', album=album, tracksi=tracksi)
+
+#-----------------------------------------------------------json-----------------------------------------------------------------------
+
+@bpapi.route('/')
+def index():
+    db = get_db()
+    albums = db.execute(
+        """SELECT AlbumId AS id, Title AS album 
+         FROM albums
+         ORDER BY Title DESC """
+    ).fetchall()
+    return jsonify(albums=albums)
+
+@bpapi.route('/<int:id>/', methods=('GET', 'POST'))
+def get_album(id):
+    db = get_db()
+    album = db.execute(
+    """SELECT AlbumId AS id, Title AS album 
+         FROM albums
+          """
+    ).fetchall()
+    tracksi = get_db().execute(
+        """SELECT t.Name AS nombre, g.Name AS genero, Composer, Milliseconds,
+         Bytes, UnitPrice
+         FROM tracks t 
+         JOIN genres g ON t.GenreId=g.GenreId
+         JOIN albums a ON t.AlbumId=a.AlbumId
+         WHERE t.AlbumId = ?
+         """,
+        (id,)
+    ).fetchall()
+
+    if album is None:
+        abort(404, f"Album id {id} doesn't exist.")
+
+    return jsonify(album=album, tracksi=tracksi)

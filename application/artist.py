@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
@@ -7,6 +7,7 @@ from werkzeug.exceptions import abort
 from application.db import get_db
 
 bp = Blueprint('artist', __name__, url_prefix='/artist')
+bpapi = Blueprint('api_artist', __name__, url_prefix="/api/artist")
 
 @bp.route('/')
 def index():
@@ -38,3 +39,34 @@ def get_artist(id):
     ).fetchall()
 
     return render_template('artists/detallito.html', artist=artist, albums=albums)
+#-----------------------------------------------------------json-----------------------------------------------------------------------
+
+@bp.route('/api/')
+def index():
+    db = get_db()
+    artistas = db.execute(
+        """SELECT ar.ArtistId AS id, ar.Name AS artista 
+         FROM artists ar 
+         ORDER BY ar.Name DESC """
+    ).fetchall()
+    return jsonify(artistas)
+
+
+@bp.route('/api/<int:id>/', methods=('GET', 'POST'))
+def get_artist(id):
+    artist = get_db().execute(
+        """SELECT ar.Name AS artista 
+         FROM artists ar
+         WHERE ar.ArtistId = ?""",
+        (id,)
+    ).fetchall()
+
+    if artist is None:
+        abort(404, f"Artist id {id} doesn't exist.")
+
+    albums = get_db().execute(
+        """SELECT a.Title AS disco FROM albums a
+         WHERE a.ArtistId = ?""",
+        (id,)
+    ).fetchall()
+    return jsonify(albums, artist)
