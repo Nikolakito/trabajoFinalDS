@@ -31,7 +31,6 @@ def create_app(test_config=None):
     
     @app.route('/')
     def index():
-    
         return render_template('index.html')
 
     from . import auth
@@ -46,12 +45,14 @@ def create_app(test_config=None):
     
     from . import musiquita
     app.register_blueprint(musiquita.bp)
+    app.register_blueprint(musiquita.bpapi)
 
     from . import albums
     app.register_blueprint(albums.bp)
+    app.register_blueprint(albums.bpapi)
 
     from . import artist
     app.register_blueprint(artist.bp)
-    app.add_url_rule('/', endpoint='tracks.index')
+    app.register_blueprint(artist.bpapi)
     
     return app

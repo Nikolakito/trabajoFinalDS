@@ -121,3 +121,8 @@ input[type="submit"] {
 article {
   border-bottom: 2px solid lightgray;
 }
+
+#espacio{
+  padding-bottom: 1em;
+  border-bottom: 2px solid black;
+}

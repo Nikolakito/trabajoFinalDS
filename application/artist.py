@@ -12,61 +12,69 @@ bpapi = Blueprint('api_artist', __name__, url_prefix="/api/artist")
 @bp.route('/')
 def index():
     db = get_db()
-    artistas = db.execute(
+    db.execute(
         """SELECT ar.ArtistId AS id, ar.Name AS artista 
          FROM artists ar 
          ORDER BY ar.Name DESC """
-    ).fetchall()
+    )
+    artistas = db.fetchall()
     return render_template('artists/index.html', artistas=artistas)
 
 
 @bp.route('/<int:id>/', methods=('GET', 'POST'))
 def get_artist(id):
-    artist = get_db().execute(
+    db = get_db
+    db.execute(
         """SELECT ar.Name AS artista 
          FROM artists ar
-         WHERE ar.ArtistId = ?""",
+         WHERE ar.ArtistId = %s""",
         (id,)
-    ).fetchall()
+    )
+    artist = db.fetchone()
+    db = get_db
+    db.execute(
+        """SELECT a.Title AS disco FROM albums a
+         WHERE a.ArtistId = %s""",
+        (id,)
+    )
+    albums = db.fetchall()
 
     if artist is None:
         abort(404, f"Artist id {id} doesn't exist.")
-
-    albums = get_db().execute(
-        """SELECT a.Title AS disco FROM albums a
-         WHERE a.ArtistId = ?""",
-        (id,)
-    ).fetchall()
 
     return render_template('artists/detallito.html', artist=artist, albums=albums)
 #-----------------------------------------------------------json-----------------------------------------------------------------------
 
-@bp.route('/api/')
+@bpapi.route('/')
 def index():
     db = get_db()
-    artistas = db.execute(
+    db.execute(
         """SELECT ar.ArtistId AS id, ar.Name AS artista 
          FROM artists ar 
          ORDER BY ar.Name DESC """
-    ).fetchall()
-    return jsonify(artistas)
+    )
+    artistas = db.fetchall()
+    return jsonify(artistas=artistas)
 
 
-@bp.route('/api/<int:id>/', methods=('GET', 'POST'))
+@bpapi.route('/<int:id>/', methods=('GET', 'POST'))
 def get_artist(id):
-    artist = get_db().execute(
+    db=get_db()
+    db.execute(
         """SELECT ar.Name AS artista 
          FROM artists ar
-         WHERE ar.ArtistId = ?""",
+         WHERE ar.ArtistId = %s""",
         (id,)
-    ).fetchall()
+    )
+    artist = db.fetchall()
 
     if artist is None:
         abort(404, f"Artist id {id} doesn't exist.")
 
-    albums = get_db().execute(
+    db.execute(
         """SELECT a.Title AS disco FROM albums a
-         WHERE a.ArtistId = ?""",
+         WHERE a.ArtistId = %s""",
         (id,)
-    ).fetchall()
-    return jsonify(albums, artist)
+    )
+    albums = db.fetchall()
+    return jsonify(albums=albums, artist=artist)

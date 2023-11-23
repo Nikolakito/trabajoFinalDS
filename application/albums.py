@@ -12,30 +12,34 @@ bpapi = Blueprint('api_album', __name__, url_prefix="/api/album")
 @bp.route('/')
 def index():
     db = get_db()
-    albums = db.execute(
+    db.execute(
         """SELECT AlbumId AS id, Title AS album 
          FROM albums
          ORDER BY Title DESC """
-    ).fetchall()
+    )
+    albums = db.fetchall()
     return render_template('albums/index.html', albums=albums)
 @bp.route('/<int:id>/', methods=('GET', 'POST'))
 def get_album(id):
     db = get_db()
-    album = db.execute(
+    db.execute(
     """SELECT AlbumId AS id, Title AS album 
          FROM albums
           """
-    ).fetchall()
-    tracksi = get_db().execute(
+    )
+    album = db.fetchone()
+
+    db.execute(
         """SELECT t.Name AS nombre, g.Name AS genero, Composer, Milliseconds,
          Bytes, UnitPrice
          FROM tracks t 
          JOIN genres g ON t.GenreId=g.GenreId
          JOIN albums a ON t.AlbumId=a.AlbumId
-         WHERE t.AlbumId = ?
+         WHERE t.AlbumId = %s
          """,
         (id,)
-    ).fetchall()
+    )
+    tracksi = db.fetchall()
 
     if album is None:
         abort(404, f"Album id {id} doesn't exist.")
@@ -47,31 +51,34 @@ def get_album(id):
 @bpapi.route('/')
 def index():
     db = get_db()
-    albums = db.execute(
+    db.execute(
         """SELECT AlbumId AS id, Title AS album 
          FROM albums
          ORDER BY Title DESC """
-    ).fetchall()
+    )
+    albums = db.fetchall()
     return jsonify(albums=albums)
 
 @bpapi.route('/<int:id>/', methods=('GET', 'POST'))
 def get_album(id):
     db = get_db()
-    album = db.execute(
+    db.execute(
     """SELECT AlbumId AS id, Title AS album 
          FROM albums
           """
-    ).fetchall()
-    tracksi = get_db().execute(
+    )
+    album = db.fetchall()
+    db.execute(
         """SELECT t.Name AS nombre, g.Name AS genero, Composer, Milliseconds,
          Bytes, UnitPrice
          FROM tracks t 
          JOIN genres g ON t.GenreId=g.GenreId
          JOIN albums a ON t.AlbumId=a.AlbumId
-         WHERE t.AlbumId = ?
+         WHERE t.AlbumId = %s
          """,
         (id,)
-    ).fetchall()
+    )
+    tracksi =db.fetchall()
 
     if album is None:
         abort(404, f"Album id {id} doesn't exist.")
